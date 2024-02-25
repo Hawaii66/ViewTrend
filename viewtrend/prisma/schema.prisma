@@ -23,16 +23,17 @@ model User {
 
 model Video {
 	id Int @id @default(autoincrement())
+	reference String
 	title String
-	description String
-	url String
+	description String @db.LongText
 	publishDate DateTime
+	image String
 }
 
 model View {
 	id Int @id @default(autoincrement())
 	count Int
-	time DateTime
+	time DateTime @default(now())
 	video Int
 }
 
