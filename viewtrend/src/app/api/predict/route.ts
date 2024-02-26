@@ -1,8 +1,8 @@
 import { GetParam } from "@/lib/request";
 import { NextRequest, NextResponse } from "next/server";
-import { youtube } from "@googleapis/youtube";
 import { Video } from "@/types/Standard";
 import prisma from "@/lib/prisma";
+import { VideoById } from "@/lib/youtube";
 
 export const revalidate = 0;
 
@@ -19,20 +19,10 @@ export const GET = async (request: NextRequest) => {
   }
 
   try {
-    const youtubeResponse = await youtube({
-      version: "v3",
-      auth: "AIzaSyDe1YZ03LBHFSM99dt5lZqotwq-NkPM2dg",
-    }).videos.list({
-      part: ["statistics", "snippet"],
-      id: [id],
-    });
-
-    if (!youtubeResponse.data.items) {
+    const data = await VideoById(id);
+    if (!data) {
       return NextResponse.json({}, { status: 500 });
     }
-
-    const data = youtubeResponse.data.items[0];
-
     const video = await prisma.video.create({
       data: {
         description: data.snippet?.description!,
